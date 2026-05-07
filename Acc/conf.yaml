@@ -1,0 +1,29 @@
+limit: 1200
+memory_size: 0x1000
+
+state_log_limit: 1000000
+
+memory_mapped_io:
+    0x80: [49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 48, 49, 50, 10, 51]
+    0x84: []
+
+reports:
+  - name: "Reverse Pascal String Result"
+    slice: last
+    view: |
+      === Output port ===
+      Address in 0x84: {io:0x84}
+      
+      === Memory dump (0x00-0x1F) ===
+      {memory:0x00:0x1F}
+  
+  - name: "Debug len"
+    slice: all
+    view: |
+      [{pc}] {instruction}
+      str: {memory:0x00:0x1F}
+      Len: {memory:0x24:0x24}
+      AC: {Acc:hex}
+
+
+      

@@ -1,0 +1,43 @@
+
+.data
+
+input_addr:      .word  0x80
+output_addr:     .word  0x84
+sum:			 .word 0x0
+prev:			 .word 0x0
+
+.text
+_start:
+    @p input_addr a! @     \ считываем входное значение: n \ []
+	a!
+    cycle
+
+	@p sum
+    @p output_addr a! !
+    halt
+
+cycle:
+	a \ [n-2k]
+	lit -2 + \ вычитаем 2, чтобы проверить n < 2 \ [n,-2] -> [n-2]
+	dup \дублируем значение вершины, чтобы if не затёр значнеие \[n-2,n-2]
+	-if continue \если число больше или равно, продолжаем \ [n-2]
+	; \иначе выходим
+continue:
+	a! \сохраняем уменьшенное значение \ []
+	lit 2 \[2]
+	@p prev + \[2, prev] -> [prev+2]
+	dup \[prev+2, prev+2]
+	!p prev \обновляем значение предыдущего \ [prev+2]
+	@p sum +\ [prev+2,sum] -> [new sum]
+	!p sum \записываем новую сумму \[]
+	cycle ; \повторяем
+	
+	
+	
+	
+	
+	
+	
+	
+
+	

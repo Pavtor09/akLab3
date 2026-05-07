@@ -1,0 +1,58 @@
+    .data
+.org             0x21
+len:             .word  0x0
+one:             .word  1
+shift:           .word  4
+underscore:      .word  0x5F
+maxLen:          .word  0x0
+two:             .word  0x000000FF
+
+
+
+    .text
+_start:
+    .org         0x90
+    load_imm     0x20                        ; буфер 20 разрядов
+    store_addr   len                         ; запоминаем конечный адрес
+_fill:
+    load_addr    underscore                  ; загружаем нижнее подчёркивание
+    store_ind    len                         ; сохраняем по адресу длины
+    load_addr    len                         ; загружаем саму длину
+    sub          one                         ; вычитаем 1 из длины
+    ble          _main                       ; если дошли до начала прекращаем заполнение
+    store_addr   len                         ; обновляем длину после записи
+    jmp          _fill                       ;повторяем, если есть что ещё заполнять
+_main:
+    load_addr    0x80                        ;загружем длинну
+    store_addr   len                         ;сохраняем
+    store_addr   0x00                        ;сохраняем длинну для ответа
+    load_imm     0x0
+_cycle:
+    add          0x80                        ; берём букву
+    store_ind    len                         ; записываем по адресу длинны
+    load_addr    len                         ; загружем длину
+    sub          one                         ; уменьшаем на 1
+    store_addr   len                         ; сохраняем
+    beqz         _exit                       ;выходим из цикла, если длинна 0
+    load_addr    len                         ; загружаем адрес со сдвигом
+    load_acc                                 ; загружем акум со сдвигом, чтобы не затереть значения
+    jmp          _cycle                      ; повторяем цикл если ещё есть длина
+_exit:
+    load_imm     0x0
+    store_addr   len                         ; задаём адрес для вывода
+    load_acc
+    and          two
+    store_addr   maxLen
+_output:
+    load_addr    len                         ;берём обновлённый адрес
+    load_acc                                 ; загружем символ
+    and          two
+    store_addr   0x84                        ; записываем результат
+    load_addr    len
+    add          one                         ;берём адрес и увеличиваем на 1
+    store_addr   len                         ;обновляем
+    sub          maxLen                      ;вычитаем длину сообщения
+    bgt          _end                        ;если мы дошли до последнего адреса, выходим
+    jmp          _output
+_end:
+    halt

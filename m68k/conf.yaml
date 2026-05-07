@@ -1,0 +1,35 @@
+limit: 4000
+memory_size: 0x300
+memory_mapped_io:
+  0x80: [49, 97, 49, 10]
+  0x84: []
+reports:
+  - name: step-by-step
+    slice: all
+    view: |
+      Instruction: {instruction}
+      PC: {pc}
+      D0: {D0}
+      D1(overflow): {D1}
+      D2(count): {D2}
+      D3(error): {D3}
+      D4(letter): {D4}
+      D5(input count): {D5}
+      A0(input): {A0}
+      A1(input buffer): {A1}
+      A2(output): {A2}
+      A3(output buffer): {A3}
+      Label: {pc:label}
+      Buffer_res[0x00-0x40]: {memory:0:63}
+      stack [0x00-0x40]: {memory:63:111}
+      Buffer_inpt: {memory:512:600}
+  - name: result
+    slice: last
+    view: |
+      numio[0x80]: {io:0x80:dec}
+      numio[0x84]: {io:0x84:dec}
+    assert: |
+      numio[0x80]: [] >>> []
+      numio[0x84]: [] >>> [-1]
+      
+
